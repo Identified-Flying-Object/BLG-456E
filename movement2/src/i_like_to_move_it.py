@@ -27,6 +27,10 @@ class Move_It():
 		self.speed = 0
 		self.angle = 0
 		self.altitude = 1
+		self.flightTime = 0
+		self.rotationTime = 0
+		self.isFlying = False
+		self.clk = rospy.get_time();
 
 	#callback for waypoints, if ever needed.
 	def waypoint_callback(self, msg):
@@ -51,10 +55,31 @@ class Move_It():
 			self.motor_command.linear.z = self.altitude - data.range + 1
 		else:
 			self.motor_command.linear.z = 0
+		
+		if self.isFlying == False and self.shouldMove:
+			self.motor_command_publisher.publish(self.motor_command)
+	
+	def clock_callback(self, clk):
+		if self.isFlying and clk.secs > self.clk + self.flightTime:
+			self.isFlying = False
+			self.motor_command.linear.x = 0
+			self.motor_command.linear.y = 0
+			self.motor_command.linear.z = 0
+			self.motor_command.angular.x = 0
+			self.motor_command.angular.y = 0
+			self.motor_command.angular.z = 0
+		elif self.isFlying and clk.secs > self.clk + self.rotationTime:
+			self.motor_command.angular.x = 0
+			self.motor_command.angular.y = 0
+			self.motor_command.angular.z = 0
+		else:
+			self.clk = clk.secs
+			print clk.secs , "/", self.clk + self/flightTime
 	
 	#For subscribing to the topics of interest and running the code.
 	def activate(self):
 		print("Entering the activate function shouldMove is now true\n")
+		print rospy.get_time() , "/", self.clk + self.flightTime
 		self.shouldMove = True
 		#self.waypoint_subscriber = rospy.Subscriber("/waypoint_cmd", Transform, self.waypoint_callback)
 		self.laserscan_subscriber = rospy.Subscriber("/scan", LaserScan, self.laserscan_callback)
@@ -62,7 +87,22 @@ class Move_It():
 		if (len(self.destin_list) > 0 ):
 			self.moveItTo(self.destin_list.pop())
 		else:
-			while not rospy.is_shutdown():
+			while not rospy.is_shutdown() and self.isFlying:
+				if rospy.get_time() > self.clk + self.flightTime:
+					self.isFlying = False
+					self.motor_command.linear.x = 0
+					self.motor_command.linear.y = 0
+					self.motor_command.linear.z = 0
+					self.motor_command.angular.x = 0
+					self.motor_command.angular.y = 0
+					self.motor_command.angular.z = 0
+				elif rospy.get_time() > self.clk + self.rotationTime:
+					self.motor_command.angular.x = 0
+					self.motor_command.angular.y = 0
+					self.motor_command.angular.z = 0
+				else:
+					self.clk = rospy.get_time()
+					print rospy.get_time() , "/", self.clk + self.flightTime
 				self.motor_command_publisher.publish(self.motor_command)
 		print "Successfully exited activate"
 	
@@ -167,16 +207,19 @@ class Move_It():
 
 			motor_command_publisher.publish(motor_command)
 	
-	#Sets the linear velocity. Pretty self-explanatory
-	def setLinear(self, x=0, y=0, z=1):
+	#Sets the linear velocity and the flight time. Pretty self-explanatory
+	def setLinear(self, x=0, y=0, z=1, flightTime = 3):
 		self.motor_command.linear.x = x
 		self.motor_command.linear.y = y
 		self.motor_command.linear.z = z
 		self.speed = M.sqrt(x**2 + y**2)
 		self.angle = M.atan2(y, x)
+		self.flightTime = flightTime
+		self.isFlying = True
 		
 	#Do I even need to write what this ine does?
-	def setAngular(self, Ox=0, Oy=0, Oz=0):
+	def setAngular(self, Ox=0, Oy=0, Oz=0, rotationTime = 1):
 		self.motor_command.angular.x = Ox
 		self.motor_command.angular.y = Oy
 		self.motor_command.angular.z = Oz
+		self.rotationTime = rotationTime
