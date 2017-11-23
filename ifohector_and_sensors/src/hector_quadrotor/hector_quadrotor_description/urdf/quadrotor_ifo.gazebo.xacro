@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<robot name="quadrotor" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- Include plugins (pressure_height, magnetic, fix) -->
+    <xacro:include filename="$(find hector_quadrotor_gazebo)/urdf/quadrotor_plugins.gazebo.xacro" />
+
+    <!-- Pi number-->
+    <xacro:property name="pi" value="3.1415926535897931" />
+
+    <!-- Main quadrotor link -->
+    <link name="base_link">
+      <inertial>
+        <mass value="1.477" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="0.01152" ixy="0.0" ixz="0.0" iyy="0.01152" iyz="0.0" izz="0.0218" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://hector_quadrotor_description/meshes/quadrotor/quadrotor_base.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://hector_quadrotor_description/meshes/quadrotor/quadrotor_base.stl"/>
+        </geometry>
+      </collision>
+    </link>
+    
+    <!-- Front facing Hokuyo UTM-30LX mounted above the quadrotor body -->
+    <xacro:include filename="$(find hector_sensors_description)/urdf/hokuyo_utm30lx.urdf.xacro" />
+    <xacro:hokuyo_utm30lx name="laser0" parent="base_link" ros_topic="scan" update_rate="40" ray_count="1081" min_angle="-135" max_angle="135">
+      <origin xyz="0.0 0.0 0.095" rpy="0 0 0"/>
+    </xacro:hokuyo_utm30lx>
+    
+    <!-- Bottom facing OV7670 RGB camera mounted front of the quadrotor body -->
+    <xacro:include filename="$(find hector_sensors_description)/urdf/omnivision_ov7670.urdf.xacro" />
+    <xacro:generic_camera name="bottom_cam" parent="base_link" ros_topic="camera/image" cam_info_topic="camera/camera_info" update_rate="30" res_x="640" res_y="480" image_format="R8G8B8" hfov="90" noise="0.01">
+      <origin xyz="0.2 0.0 -0.01" rpy="0 ${90*pi/180} 0"/>
+    </xacro:generic_camera>
+
+    <!-- Bottom facing kinect camera
+    <xacro:include filename="$(find hector_sensors_description)/urdf/kinect_camera.urdf.xacro" />
+    <xacro:kinect_camera name="kinect_cam" parent="base_link">
+      <origin xyz="-0.1 0.0 -0.1" rpy="0 ${90*pi/180} 0"/>
+    </xacro:kinect_camera>  -->
+
+    <!-- Bottom facing LV-EZ4 sonar sensor mounted back of the quadrotor body -->
+    <xacro:include filename="$(find hector_sensors_description)/urdf/max_sonar_ez4.urdf.xacro" />
+    <xacro:sonar_sensor name="sonar" parent="base_link" ros_topic="sonar_height" update_rate="20" min_range="0.02" max_range="6.45" field_of_view="${40*pi/180}" ray_count="3" noise="0.01">
+      <origin xyz="-0.2 0.0 -0.01" rpy="0 ${90*pi/180} 0"/>
+    </xacro:sonar_sensor>
+
+</robot>
+
