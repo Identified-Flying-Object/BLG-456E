@@ -5,7 +5,6 @@
 #include <pluginlib/class_list_macros.h>
 #include "global_planner.h"
 
-//register this planner as a BaseGlobalPlanner plugin
 PLUGINLIB_EXPORT_CLASS(global_planner::GlobalPlanner, nav_core::BaseGlobalPlanner)
 
 using namespace std;
@@ -35,8 +34,6 @@ namespace global_planner {
 
             initialized_ = true;
         }
-        else
-            ROS_WARN("This planner has already been initialized... doing nothing");
     }
 
 
@@ -129,3 +126,4 @@ namespace global_planner {
         return done;
     }
 };
+
