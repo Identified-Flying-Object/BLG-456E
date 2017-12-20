@@ -12,7 +12,6 @@ from tf import transformations
 class Move_It():
 	
 	def __init__(self):
-		print("Entering the init function yay\n")
 		self.shouldMove = False
 		rospy.init_node('movement')
 		self.waypoint = None
@@ -29,8 +28,8 @@ class Move_It():
 		self.altitude = 1
 		self.flightTime = 0
 		self.rotationTime = 0
-		self.isFlying = False
 		self.clk = rospy.get_time();
+		print self.clk
 
 	#callback for waypoints, if ever needed.
 	def waypoint_callback(self, msg):
@@ -39,7 +38,6 @@ class Move_It():
 	
 	#Laserscan callback used in order to avoid crashing. Detect the objects in its path and then halts the robot if found.
 	def laserscan_callback(self, data):
-		print("ls call back\n")
 		for i in range(len(data.ranges), 10):
 			if data.ranges[i] < 1.5:
 				angle = 135 - i*data.angle_increment*180/M.pi
@@ -47,34 +45,19 @@ class Move_It():
 				if angle > self.angle - 15 and angle < self.angle + 15:
 					print "we are at a crashing course, stopping machine"
 					self.setLinear(0, 0, 0)
-		print "This is the x, y, z speed: ", self.motor_command.linear.x, self.motor_command.linear.y, self.motor_command.linear.z
+		#print "This is the x, y, z speed: ", self.motor_command.linear.x, self.motor_command.linear.y, self.motor_command.linear.z
 	
 	#Sonar_height callback. Subscribed to the '/sonar_height' topic, takes in Range. Used for maintaining altitudes.
 	def sonar_callback(self, data):
 		if data.range <= self.altitude:
-			self.motor_command.linear.z = self.altitude - data.range + 1
-		else:
-			self.motor_command.linear.z = 0
+			#print "too Low goin higher: ", data.range
+			self.motor_command.linear.z = 1
+		elif data.range > self.altitude:
+			#print "Too high goin lower: ", data.range
+			self.motor_command.linear.z = -data.range/3
 		
-		if self.isFlying == False and self.shouldMove:
+		if not self.shouldMove:
 			self.motor_command_publisher.publish(self.motor_command)
-	
-	def clock_callback(self, clk):
-		if self.isFlying and clk.secs > self.clk + self.flightTime:
-			self.isFlying = False
-			self.motor_command.linear.x = 0
-			self.motor_command.linear.y = 0
-			self.motor_command.linear.z = 0
-			self.motor_command.angular.x = 0
-			self.motor_command.angular.y = 0
-			self.motor_command.angular.z = 0
-		elif self.isFlying and clk.secs > self.clk + self.rotationTime:
-			self.motor_command.angular.x = 0
-			self.motor_command.angular.y = 0
-			self.motor_command.angular.z = 0
-		else:
-			self.clk = clk.secs
-			print clk.secs , "/", self.clk + self/flightTime
 	
 	#For subscribing to the topics of interest and running the code.
 	def activate(self):
@@ -84,33 +67,21 @@ class Move_It():
 		#self.waypoint_subscriber = rospy.Subscriber("/waypoint_cmd", Transform, self.waypoint_callback)
 		self.laserscan_subscriber = rospy.Subscriber("/scan", LaserScan, self.laserscan_callback)
 		self.sonarheight_subscirber = rospy.Subscriber("/sonar_height", Range, self.sonar_callback)
+		activationTime = rospy.get_time()
 		if (len(self.destin_list) > 0 ):
 			self.moveItTo(self.destin_list.pop())
 		else:
-			while not rospy.is_shutdown() and self.isFlying:
-				if rospy.get_time() > self.clk + self.flightTime:
-					self.isFlying = False
-					self.motor_command.linear.x = 0
-					self.motor_command.linear.y = 0
-					self.motor_command.linear.z = 0
-					self.motor_command.angular.x = 0
-					self.motor_command.angular.y = 0
-					self.motor_command.angular.z = 0
-				elif rospy.get_time() > self.clk + self.rotationTime:
-					self.motor_command.angular.x = 0
-					self.motor_command.angular.y = 0
-					self.motor_command.angular.z = 0
-				else:
-					self.clk = rospy.get_time()
-					print rospy.get_time() , "/", self.clk + self.flightTime
+			while self.shouldMove and not rospy.is_shutdown() and rospy.get_time() < self.flightTime + activationTime:
+				print "in loop, time: ", rospy.get_time(), ". Finishing time: ", self.flightTime + activationTime				
 				self.motor_command_publisher.publish(self.motor_command)
+		self.shouldMove = False
+		self.motor_command = Twist()
 		print "Successfully exited activate"
 	
 	#For unregistering from subscribed topics, Therefore cancelling out any and all movement.
-	def deacvtivate(self):
+	def deactivate(self):
+		self.motor_command = Twist()
 		self.shouldMove = False
-		self.waypoint_subscriber.unregister()
-		self.laserscan_subscriber.unregister()
 	
 	#Moves the robot to a specified point. May be buggy. Will be reviewed once SLAM is completed.
 	#destin must be an array of size 3 in the order: [x, y, z]
@@ -215,7 +186,6 @@ class Move_It():
 		self.speed = M.sqrt(x**2 + y**2)
 		self.angle = M.atan2(y, x)
 		self.flightTime = flightTime
-		self.isFlying = True
 		
 	#Do I even need to write what this ine does?
 	def setAngular(self, Ox=0, Oy=0, Oz=0, rotationTime = 1):
@@ -223,3 +193,5 @@ class Move_It():
 		self.motor_command.angular.y = Oy
 		self.motor_command.angular.z = Oz
 		self.rotationTime = rotationTime
+	def setAltitude(self, x = 1):
+		self.altitude = x
