@@ -28,7 +28,307 @@
         </geometry>
       </collision>
     </link>
-    
+
+    <!-- Hook model mounted bottom of the quadrotor body -->
+    <joint name="hook_connection" type="fixed">
+      <parent link="base_link"/>
+      <child link="hook__base_mount"/>
+      <origin xyz="-0.12 0 -0.18"/>
+    </joint>
+
+    <!-- Hook model -->    
+  <joint name="hook__arm_JOINT_2" type="fixed">
+    <parent link="hook__basejoint"/>
+    <child link="hook__arm"/>
+    <origin rpy="0  0  0" xyz="-0.11  0    0"/>
+    <axis xyz="0  0  0"/>
+    <limit effort="0" lower="0" upper="0" velocity="0"/>
+  </joint>
+  <joint name="hook__arm_JOINT_3" type="revolute">
+    <parent link="hook__arm"/>
+    <child link="hook__armjoint"/>
+    <origin rpy="0  0  0" xyz="-0.105  0     0"/>
+    <axis xyz="0  1  0"/>
+    <limit effort="-1.0" lower="0.0" upper="1.57" velocity="-1.0"/>
+  </joint>
+  <joint name="hook__base_JOINT_1" type="revolute">
+    <parent link="hook__base"/>
+    <child link="hook__basejoint"/>
+    <origin rpy="0  0  0" xyz="0     0    -0.019"/>
+    <axis xyz="0  1  0"/>
+    <limit effort="-1.0" lower="-1.8" upper="0.0" velocity="-1.0"/>
+  </joint>
+  <joint name="hook__base_mount_JOINT_0" type="fixed">
+    <parent link="hook__base_mount"/>
+    <child link="hook__base"/>
+    <origin rpy="0  0  0" xyz="0.11   0     0.119"/>
+    <axis xyz="0  0  0"/>
+    <limit effort="0" lower="0" upper="0" velocity="0"/>
+  </joint>
+  <joint name="hook__bone1_JOINT_4" type="fixed">
+    <parent link="hook__armjoint"/>
+    <child link="hook__bone1"/>
+    <origin rpy="0  0  0" xyz="0     0    -0.045"/>
+    <axis xyz="0  0  0"/>
+    <limit effort="0" lower="0" upper="0" velocity="0"/>
+  </joint>
+  <joint name="hook__bone1_JOINT_5" type="fixed">
+    <parent link="hook__bone1"/>
+    <child link="hook__bone1joint"/>
+    <origin rpy="0  0  0" xyz="0      0     -0.0425"/>
+    <axis xyz="0  0  0"/>
+    <limit effort="0" lower="0" upper="0" velocity="0"/>
+  </joint>
+  <joint name="hook__bone2_JOINT_6" type="fixed">
+    <parent link="hook__bone1joint"/>
+    <child link="hook__bone2"/>
+    <origin rpy="0  0  0" xyz="0.03  0    0"/>
+    <axis xyz="0  0  0"/>
+    <limit effort="0" lower="0" upper="0" velocity="0"/>
+  </joint>
+  <joint name="hook__bone2_JOINT_7" type="fixed">
+    <parent link="hook__bone2"/>
+    <child link="hook__bone2joint"/>
+    <origin rpy="0  0  0" xyz="0.03  0    0"/>
+    <axis xyz="0  0  0"/>
+    <limit effort="0" lower="0" upper="0" velocity="0"/>
+  </joint>
+  <joint name="hook__bone3_JOINT_8" type="fixed">
+    <parent link="hook__bone2joint"/>
+    <child link="hook__bone3"/>
+    <origin rpy="0  0  0" xyz="0      0      0.0275"/>
+    <axis xyz="0  0  0"/>
+    <limit effort="0" lower="0" upper="0" velocity="0"/>
+  </joint>
+  <joint name="hook__bone3_JOINT_9" type="fixed">
+    <parent link="hook__bone3"/>
+    <child link="hook__bone3tip"/>
+    <origin rpy="0  0  0" xyz="0      0      0.0225"/>
+    <axis xyz="0  0  0"/>
+    <limit effort="0" lower="0" upper="0" velocity="0"/>
+  </joint>
+  <link name="hook__base_mount">
+    <inertial>
+      <mass value="0.005"/>
+      <origin rpy="0  0  0" xyz="0.11    0      0.1355"/>
+      <inertia ixx="0.166667" ixy="0" ixz="0" iyy="0.166667" iyz="0" izz="0.166667"/>
+    </inertial>
+    <collision name="hook__collision">
+      <origin rpy="0  0  0" xyz="0.11    0      0.1355"/>
+      <geometry>
+        <box size="0.03 0.03 0.01"/>
+      </geometry>
+    </collision>
+    <visual name="hook__visual">
+      <origin rpy="0  0  0" xyz="0.11    0      0.1355"/>
+      <geometry>
+        <box size="0.03 0.03 0.01"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <link name="hook__base">
+    <inertial>
+      <mass value="0.01"/>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <inertia ixx="0.166667" ixy="0" ixz="0" iyy="0.166667" iyz="0" izz="0.166667"/>
+    </inertial>
+    <collision name="hook__collision">
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+        <box size="0.02 0.02 0.023"/>
+      </geometry>
+    </collision>
+    <visual name="hook__visual">
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+        <box size="0.02 0.02 0.023"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <link name="hook__basejoint">
+    <inertial>
+      <mass value="0.01"/>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <inertia ixx="0.145833" ixy="0" ixz="0" iyy="0.145833" iyz="0" izz="0.125"/>
+    </inertial>
+    <collision name="hook__collision">
+      <origin rpy="1.57  0    0" xyz="0  0  0"/>
+      <geometry>
+        <cylinder length="0.022" radius="0.013"/>
+      </geometry>
+    </collision>
+    <visual name="hook__visual">
+      <origin rpy="1.57  0    0" xyz="0  0  0"/>
+      <geometry>
+        <cylinder length="0.022" radius="0.013"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <link name="hook__arm">
+    <inertial>
+      <mass value="0.02"/>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <inertia ixx="0.166667" ixy="0" ixz="0" iyy="0.166667" iyz="0" izz="0.166667"/>
+    </inertial>
+    <collision name="hook__collision">
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+        <box size="0.2 0.015 0.015"/>
+      </geometry>
+    </collision>
+    <visual name="hook__visual">
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+        <box size="0.2 0.015 0.015"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+  </link>
+  <link name="hook__armjoint">
+    <inertial>
+      <mass value="0.01"/>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <inertia ixx="0.145833" ixy="0" ixz="0" iyy="0.145833" iyz="0" izz="0.125"/>
+    </inertial>
+    <collision name="hook__collision">
+      <origin rpy="1.57  0    0" xyz="0  0  0"/>
+      <geometry>
+        <cylinder length="0.017" radius="0.01"/>
+      </geometry>
+    </collision>
+    <visual name="hook__visual">
+      <origin rpy="1.57  0    0" xyz="0  0  0"/>
+      <geometry>
+        <cylinder length="0.017" radius="0.01"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <link name="hook__bone1">
+    <inertial>
+      <mass value="0.01"/>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <inertia ixx="0.166667" ixy="0" ixz="0" iyy="0.166667" iyz="0" izz="0.166667"/>
+    </inertial>
+    <collision name="hook__collision">
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+        <box size="0.01 0.01 0.075"/>
+      </geometry>
+    </collision>
+    <visual name="hook__visual">
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+        <box size="0.01 0.01 0.075"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+  </link>
+  <link name="hook__bone1joint">
+    <inertial>
+      <mass value="0.01"/>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <inertia ixx="0.145833" ixy="0" ixz="0" iyy="0.145833" iyz="0" izz="0.125"/>
+    </inertial>
+    <collision name="hook__collision">
+      <origin rpy="1.57  0    0" xyz="0  0  0"/>
+      <geometry>
+        <cylinder length="0.012" radius="0.007"/>
+      </geometry>
+    </collision>
+    <visual name="hook__visual">
+      <origin rpy="1.57  0    0" xyz="0  0  0"/>
+      <geometry>
+        <cylinder length="0.012" radius="0.007"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <link name="hook__bone2">
+    <inertial>
+      <mass value="0.01"/>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <inertia ixx="0.166667" ixy="0" ixz="0" iyy="0.166667" iyz="0" izz="0.166667"/>
+    </inertial>
+    <collision name="hook__collision">
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+        <box size="0.05 0.01 0.01"/>
+      </geometry>
+    </collision>
+    <visual name="hook__visual">
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+        <box size="0.05 0.01 0.01"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+  </link>
+  <link name="hook__bone2joint">
+    <inertial>
+      <mass value="0.01"/>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <inertia ixx="0.145833" ixy="0" ixz="0" iyy="0.145833" iyz="0" izz="0.125"/>
+    </inertial>
+    <collision name="hook__collision">
+      <origin rpy="1.57  0    0" xyz="0  0  0"/>
+      <geometry>
+        <cylinder length="0.012" radius="0.007"/>
+      </geometry>
+    </collision>
+    <visual name="hook__visual">
+      <origin rpy="1.57  0    0" xyz="0  0  0"/>
+      <geometry>
+        <cylinder length="0.012" radius="0.007"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <link name="hook__bone3">
+    <inertial>
+      <mass value="0.01"/>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <inertia ixx="0.166667" ixy="0" ixz="0" iyy="0.166667" iyz="0" izz="0.166667"/>
+    </inertial>
+    <collision name="hook__collision">
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+        <box size="0.01 0.01 0.045"/>
+      </geometry>
+    </collision>
+    <visual name="hook__visual">
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+        <box size="0.01 0.01 0.045"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+  </link>
+  <link name="hook__bone3tip">
+    <inertial>
+      <mass value="0.01"/>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <inertia ixx="0.145833" ixy="0" ixz="0" iyy="0.145833" iyz="0" izz="0.125"/>
+    </inertial>
+    <collision name="hook__collision">
+      <origin rpy="1.57  0    0" xyz="0  0  0"/>
+      <geometry>
+        <cylinder length="0.012" radius="0.005"/>
+      </geometry>
+    </collision>
+    <visual name="hook__visual">
+      <origin rpy="1.57  0    0" xyz="0  0  0"/>
+      <geometry>
+        <cylinder length="0.012" radius="0.005"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+
+   
     <!-- Front facing Hokuyo UTM-30LX mounted above the quadrotor body -->
     <xacro:include filename="$(find hector_sensors_description)/urdf/hokuyo_utm30lx.urdf.xacro" />
     <xacro:hokuyo_utm30lx name="laser0" parent="base_link" ros_topic="scan" update_rate="40" ray_count="1081" min_angle="-135" max_angle="135">
@@ -41,12 +341,6 @@
       <origin xyz="0.2 0.0 -0.01" rpy="0 ${90*pi/180} 0"/>
     </xacro:generic_camera>
 
-    <!-- Bottom facing kinect camera
-    <xacro:include filename="$(find hector_sensors_description)/urdf/kinect_camera.urdf.xacro" />
-    <xacro:kinect_camera name="kinect_cam" parent="base_link">
-      <origin xyz="-0.1 0.0 -0.1" rpy="0 ${90*pi/180} 0"/>
-    </xacro:kinect_camera>  -->
-
     <!-- Bottom facing LV-EZ4 sonar sensor mounted back of the quadrotor body -->
     <xacro:include filename="$(find hector_sensors_description)/urdf/max_sonar_ez4.urdf.xacro" />
     <xacro:sonar_sensor name="sonar" parent="base_link" ros_topic="sonar_height" update_rate="20" min_range="0.02" max_range="6.45" field_of_view="${40*pi/180}" ray_count="3" noise="0.01">
@@ -54,4 +348,3 @@
     </xacro:sonar_sensor>
 
 </robot>
-
