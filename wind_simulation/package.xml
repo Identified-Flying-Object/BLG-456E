@@ -1,0 +1,20 @@
+<package>
+  <name>wind_simulation</name>
+  <version>0.0.7</version>
+  <description>
+    Wind simulation package for Aider Drone.
+  </description>
+  <license>BSD</license>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+  <build_depend>geometry_msgs</build_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>geometry_msgs</run_depend>
+
+  <!-- Dependencies needed only for running tests. -->
+
+</package>
