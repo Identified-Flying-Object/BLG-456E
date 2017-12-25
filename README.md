@@ -6,5 +6,6 @@ Drone takes a package which contains first aid equipments such as food, water, m
 
  Note: Add the lines below into launch file to publis joint states to fix the problem in Rviz.
  
- <!-- For non-fixed joints publish joint states -->
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" ></node>
+ \<!-- For non-fixed joints publish joint states -->
+ 
+ \<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >\</node>
